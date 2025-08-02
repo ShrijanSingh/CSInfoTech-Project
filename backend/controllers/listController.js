@@ -1,3 +1,12 @@
+// Clear all distributed list items
+exports.clearListItems = async (req, res) => {
+  try {
+    await ListItem.deleteMany({});
+    res.json({ message: 'All distributed list items cleared.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 const Agent = require('../models/Agent');
 const ListItem = require('../models/ListItem');
 const { parse } = require('csv-parse/sync');
@@ -28,22 +37,31 @@ exports.uploadList = async (req, res) => {
     if (!items.every(i => i.FirstName && i.Phone && i.Notes)) {
       return res.status(400).json({ message: 'Invalid file format' });
     }
-    const agents = await Agent.find();
+    let agents = await Agent.find();
     if (agents.length < 1) return res.status(400).json({ message: 'No agents found' });
-    // Distribute items
+    // Use only the first 5 agents for distribution
+    agents = agents.slice(0, 5);
     let distributed = Array.from({ length: agents.length }, () => []);
     items.forEach((item, idx) => {
       distributed[idx % agents.length].push(item);
     });
-    // Save to DB
+    // Save to DB, prevent duplicates
     for (let i = 0; i < agents.length; i++) {
       for (let item of distributed[i]) {
-        await ListItem.create({
+        const exists = await ListItem.findOne({
           firstName: item.FirstName,
           phone: item.Phone,
           notes: item.Notes,
           agent: agents[i]._id
         });
+        if (!exists) {
+          await ListItem.create({
+            firstName: item.FirstName,
+            phone: item.Phone,
+            notes: item.Notes,
+            agent: agents[i]._id
+          });
+        }
       }
     }
     // Calculate distribution summary for Notes field

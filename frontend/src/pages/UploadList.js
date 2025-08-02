@@ -22,6 +22,7 @@ function UploadList() {
       });
       setMessage('List uploaded and distributed');
       setFile(null);
+      sessionStorage.setItem('csvUploaded', 'true');
     } catch (err) {
       setMessage(err.response?.data?.message || 'Error uploading list');
     }

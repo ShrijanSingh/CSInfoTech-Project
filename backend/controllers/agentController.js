@@ -1,3 +1,14 @@
+// Delete agent by ID
+exports.deleteAgent = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+    const deleted = await Agent.findByIdAndDelete(agentId);
+    if (!deleted) return res.status(404).json({ message: 'Agent not found' });
+    res.json({ message: 'Agent deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 const Agent = require('../models/Agent');
 const bcrypt = require('bcryptjs');
 

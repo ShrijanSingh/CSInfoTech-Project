@@ -10,4 +10,7 @@ router.get('/agent/:agentId', auth, listController.getAgentList);
 // New route for notes distribution
 router.get('/distribution', auth, listController.getNotesDistribution);
 
+// Route to clear all distributed list items
+router.delete('/clear', auth, listController.clearListItems);
+
 module.exports = router;

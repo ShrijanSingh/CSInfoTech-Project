@@ -19,8 +19,10 @@
 ## Features
 - Admin login (JWT)
 - Agent management
-- CSV upload and distribution
+- CSV upload and distribution (only first 5 agents used, as per assignment)
 - List display per agent
+- Distributed list items are auto-cleared when frontend is closed or refreshed
+- Duplicate list items for agents are prevented
 
 ## Tech Stack
 - MongoDB, Express.js, Node.js, React.js
@@ -30,7 +32,7 @@ For any issues, check error messages or contact the author.
 ## API Endpoints
 
 ### List Upload & Distribution
-- `POST /api/list/upload` — Upload CSV/XLSX, distributes items among agents, returns notes distribution summary.
+- `POST /api/list/upload` — Upload CSV/XLSX, distributes items among first 5 agents, prevents duplicates, returns notes distribution summary.
 
 ### Get Notes Distribution
 - `GET /api/list/distribution` — Returns overall distribution of 'Notes' field for all uploaded items.
@@ -38,7 +40,11 @@ For any issues, check error messages or contact the author.
 ### Get Agent List
 - `GET /api/list/agent/:agentId` — Returns list items assigned to a specific agent.
 
+### Clear Distributed List Items
+- `DELETE /api/list/clear` — Clears all distributed list items (called automatically when frontend is closed or refreshed).
+
 ## Frontend Usage
 
 - The notes distribution is displayed using the `NotesDistribution` React component (`frontend/src/components/NotesDistribution.js`).
 - To show the distribution, import and use `<NotesDistribution />` in your desired page (e.g., Dashboard).
+- Distributed list items are cleared automatically when the frontend is closed or refreshed.

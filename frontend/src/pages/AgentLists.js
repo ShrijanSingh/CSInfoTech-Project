@@ -80,50 +80,74 @@ function AgentLists() {
   };
 
   return (
-    <div className="app-container">
-      <h2>Agent Lists</h2>
-      <select onChange={handleSelect} value={selected} disabled={loading}>
-        <option value="">Select Agent</option>
-        {agents.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
-      </select>
-      <ul style={{marginTop:'18px'}}>
-        {agents.map(a => (
-          <li key={a._id} style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between',background:'#f8f9fa',padding:'8px 12px',borderRadius:'6px'}}>
-            {editId === a._id ? (
-              <form onSubmit={e => { e.preventDefault(); handleEditSubmit(a._id); }} style={{display:'flex',alignItems:'center',width:'100%',gap:'8px'}}>
-                <input name="name" value={editData.name} onChange={handleEditChange} required style={{width:'100px'}} />
-                <input name="email" value={editData.email} onChange={handleEditChange} required style={{width:'160px'}} />
-                <input name="mobile" value={editData.mobile} onChange={handleEditChange} required style={{width:'120px'}} />
-                <button type="submit" style={{background:'#27ae60',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Save</button>
-                <button type="button" onClick={handleEditCancel} style={{background:'#b2bec3',color:'#2d3436',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Cancel</button>
-              </form>
-            ) : (
-              <>
-                <span>
-                  <strong>{a.name}</strong> <span style={{color:'#6a89cc'}}>- {a.email}</span> <span style={{color:'#38d39f'}}>- {a.mobile}</span>
-                </span>
-                <div style={{display:'flex',gap:'8px'}}>
-                  <button onClick={() => handleEdit(a._id)} style={{background:'#3498db',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Edit</button>
-                  <button onClick={() => handleDelete(a._id)} style={{background:'#e74c3c',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Delete</button>
-                </div>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-      {selected && (
-        <div style={{margin:'18px 0',padding:'16px',background:'#f5f7fa',borderRadius:'8px',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-          <strong>Name:</strong> {agents.find(a => a._id === selected)?.name}<br/>
-          <strong>Email:</strong> {agents.find(a => a._id === selected)?.email}<br/>
-          <strong>Mobile:</strong> {agents.find(a => a._id === selected)?.mobile}
+    <div style={{ minHeight: '100vh', background: '#f4f6fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#fff', borderRadius: 24, boxShadow: '0 4px 32px #b2b6d622', padding: '48px 40px', minWidth: 420, maxWidth: 540, width: '100%' }}>
+        <h2 style={{ fontWeight: 800, color: '#2d3e50', textAlign: 'center', marginBottom: 32, fontSize: '2rem', letterSpacing: 1 }}>Agent Lists</h2>
+        <select onChange={handleSelect} value={selected} disabled={loading} className="form-select mb-4" style={inputStyle}>
+          <option value="">Select Agent</option>
+          {agents.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
+        </select>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {agents.map(a => (
+            <div key={a._id} style={{ background: '#f8faff', borderRadius: 16, padding: '18px 24px', boxShadow: '0 2px 12px #b2b6d611', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {editId === a._id ? (
+                <form onSubmit={e => { e.preventDefault(); handleEditSubmit(a._id); }} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  <input name="name" value={editData.name} onChange={handleEditChange} required className="form-control" style={{ width: '100px', ...inputStyle }} />
+                  <input name="email" value={editData.email} onChange={handleEditChange} required className="form-control" style={{ width: '160px', ...inputStyle }} />
+                  <input name="mobile" value={editData.mobile} onChange={handleEditChange} required className="form-control" style={{ width: '120px', ...inputStyle }} />
+                  <button type="submit" className="btn btn-success btn-sm" style={buttonStyle}>Save</button>
+                  <button type="button" onClick={handleEditCancel} className="btn btn-secondary btn-sm" style={buttonStyle}>Cancel</button>
+                </form>
+              ) : (
+                <>
+                  <span style={{ fontWeight: 700, fontSize: 17 }}>{a.name} <span style={{ color: '#6a89cc', fontWeight: 500 }}>- {a.email}</span> <span style={{ color: '#38d39f', fontWeight: 500 }}>- {a.mobile}</span></span>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                    <button onClick={() => handleEdit(a._id)} className="btn btn-info btn-sm" style={buttonStyle}>Edit</button>
+                    <button onClick={() => handleDelete(a._id)} className="btn btn-danger btn-sm" style={buttonStyle}>Delete</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
         </div>
-      )}
-      <ul>
-        {items.map((item, idx) => (
-          <li key={idx}><strong>{item.firstName}</strong> <span style={{color:'#6a89cc'}}>- {item.phone}</span> <span style={{color:'#38d39f'}}>- {item.notes}</span></li>
-        ))}
-      </ul>
+        {selected && (
+          <div className="mb-3 p-3 bg-light rounded shadow-sm" style={{ marginTop: 24 }}>
+            <strong>Name:</strong> {agents.find(a => a._id === selected)?.name}<br />
+            <strong>Email:</strong> {agents.find(a => a._id === selected)?.email}<br />
+            <strong>Mobile:</strong> {agents.find(a => a._id === selected)?.mobile}
+          </div>
+        )}
+        {items.length > 0 && (
+          <ul className="list-group" style={{ marginTop: 24 }}>
+            {items.map((item, idx) => (
+              <li key={idx} className="list-group-item">
+                <strong>{item.firstName}</strong> <span className="text-primary">- {item.phone}</span> <span className="text-success">- {item.notes}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
+
+const inputStyle = {
+  border: '1.5px solid #e0e7ff',
+  borderRadius: 10,
+  fontSize: '1rem',
+  padding: '14px 16px',
+  background: '#f8faff',
+  boxShadow: 'none',
+};
+const buttonStyle = {
+  background: 'linear-gradient(90deg, #38d39f 60%, #6a89cc 100%)',
+  color: '#fff',
+  fontWeight: 700,
+  fontSize: '1.1rem',
+  borderRadius: 10,
+  padding: '8px 18px',
+  boxShadow: '0 2px 8px #6a89cc22',
+  border: 'none',
+  letterSpacing: 1,
+};
 export default AgentLists;

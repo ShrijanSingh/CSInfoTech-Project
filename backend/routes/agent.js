@@ -6,6 +6,8 @@ const auth = require('../middleware/auth');
 
 router.post('/', auth, agentController.addAgent);
 router.get('/', auth, agentController.getAgents);
+// Update agent by ID
+router.put('/:id', auth, agentController.updateAgent);
 // Delete agent by ID
 router.delete('/:id', auth, agentController.deleteAgent);
 

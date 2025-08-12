@@ -6,6 +6,8 @@ function AgentLists() {
   const [selected, setSelected] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editData, setEditData] = useState({ name: '', email: '', mobile: '' });
   const [csvUploaded, setCsvUploaded] = useState(false);
   const token = localStorage.getItem('token');
 
@@ -18,6 +20,37 @@ function AgentLists() {
       setItems([]);
     }
   }, [token]);
+
+
+
+  const handleEdit = (id) => {
+    const agent = agents.find(a => a._id === id);
+    setEditId(id);
+    setEditData({ name: agent.name, email: agent.email, mobile: agent.mobile });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditCancel = () => {
+    setEditId(null);
+    setEditData({ name: '', email: '', mobile: '' });
+  };
+
+  const handleEditSubmit = async (id) => {
+    setLoading(true);
+    try {
+      const res = await axios.put(`http://localhost:5000/api/agents/${id}`, editData, { headers: { Authorization: `Bearer ${token}` } });
+      setAgents(agents.map(a => a._id === id ? res.data : a));
+      setEditId(null);
+      setEditData({ name: '', email: '', mobile: '' });
+    } catch (err) {
+      alert('Failed to update agent');
+    }
+    setLoading(false);
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this agent?')) return;
@@ -56,10 +89,25 @@ function AgentLists() {
       <ul style={{marginTop:'18px'}}>
         {agents.map(a => (
           <li key={a._id} style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between',background:'#f8f9fa',padding:'8px 12px',borderRadius:'6px'}}>
-            <span>
-              <strong>{a.name}</strong> <span style={{color:'#6a89cc'}}>- {a.email}</span> <span style={{color:'#38d39f'}}>- {a.mobile}</span>
-            </span>
-            <button onClick={() => handleDelete(a._id)} style={{background:'#e74c3c',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Delete</button>
+            {editId === a._id ? (
+              <form onSubmit={e => { e.preventDefault(); handleEditSubmit(a._id); }} style={{display:'flex',alignItems:'center',width:'100%',gap:'8px'}}>
+                <input name="name" value={editData.name} onChange={handleEditChange} required style={{width:'100px'}} />
+                <input name="email" value={editData.email} onChange={handleEditChange} required style={{width:'160px'}} />
+                <input name="mobile" value={editData.mobile} onChange={handleEditChange} required style={{width:'120px'}} />
+                <button type="submit" style={{background:'#27ae60',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Save</button>
+                <button type="button" onClick={handleEditCancel} style={{background:'#b2bec3',color:'#2d3436',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Cancel</button>
+              </form>
+            ) : (
+              <>
+                <span>
+                  <strong>{a.name}</strong> <span style={{color:'#6a89cc'}}>- {a.email}</span> <span style={{color:'#38d39f'}}>- {a.mobile}</span>
+                </span>
+                <div style={{display:'flex',gap:'8px'}}>
+                  <button onClick={() => handleEdit(a._id)} style={{background:'#3498db',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Edit</button>
+                  <button onClick={() => handleDelete(a._id)} style={{background:'#e74c3c',color:'#fff',border:'none',borderRadius:'4px',padding:'4px 10px',cursor:'pointer'}}>Delete</button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>

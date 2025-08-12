@@ -1,3 +1,20 @@
+// Update agent by ID
+exports.updateAgent = async (req, res) => {
+  try {
+    const agentId = req.params.id;
+    const { name, email, mobile } = req.body;
+    // Only update name, email, mobile (not password)
+    const updated = await Agent.findByIdAndUpdate(
+      agentId,
+      { name, email, mobile },
+      { new: true, runValidators: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Agent not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 // Delete agent by ID
 exports.deleteAgent = async (req, res) => {
   try {
